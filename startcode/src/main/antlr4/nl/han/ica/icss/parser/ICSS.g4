@@ -1,23 +1,24 @@
 grammar ICSS;
-stylesheet: styleRule+ | EOF;
+stylesheet: styleRule+ | variableAssignment+ styleRule+ | EOF;
 
 styleRule: selector body;
 
 // the first symbols.
 
 selector: tagSelector | idSelector | classSelector;
-body: OPEN_BRACE decleration+ CLOSE_BRACE;
+body: OPEN_BRACE declaration+ CLOSE_BRACE;
 
 tagSelector: LOWER_IDENT;
 idSelector: ID_IDENT;
 classSelector: CLASS_IDENT;
 
 // defining the content
-decleration: propertyName COLON expression SEMICOLON;
+declaration: propertyName COLON expression SEMICOLON;
 propertyName: LOWER_IDENT;
-expression: COLOR | PIXELSIZE | TRUE | FALSE | PERCENTAGE | SCALAR;
+expression: COLOR | PIXELSIZE | TRUE | FALSE | PERCENTAGE | SCALAR | variableReference;
 
-
+variableAssignment:  variableReference ASSIGNMENT_OPERATOR expression SEMICOLON;
+variableReference: CAPITAL_IDENT;
 
 
 //--- LEXER: ---
