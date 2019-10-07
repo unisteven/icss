@@ -187,6 +187,7 @@ public class MainGui extends Application {
 
     private void parse() {
         feedbackPane.clear();
+        feedbackPane.addLine("hello world");
         feedbackPane.addLine("Parsing...");
 
         pipeline.parseString(inputPane.getText());

@@ -1,4 +1,20 @@
 grammar ICSS;
+stylesheet: item+ | EOF;
+
+item: tagSelector+ | idSelector+ | classSelector+;
+
+// the first symbols.
+tagSelector: LOWER_IDENT OPEN_BRACE decleration+ CLOSE_BRACE;
+idSelector: ID_IDENT OPEN_BRACE decleration+ CLOSE_BRACE;
+classSelector: CLASS_IDENT OPEN_BRACE decleration+ CLOSE_BRACE;
+
+// defining the content
+decleration: property expression SEMICOLON;
+property: LOWER_IDENT COLON;
+expression: COLOR | PIXELSIZE | TRUE | FALSE;
+
+
+
 
 //--- LEXER: ---
 // IF support:
@@ -40,4 +56,3 @@ ASSIGNMENT_OPERATOR: ':=';
 
 //--- PARSER: ---
 
-stylesheet: EOF;
