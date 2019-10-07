@@ -13,7 +13,7 @@ idSelector: ID_IDENT;
 classSelector: CLASS_IDENT;
 
 // defining the content
-declaration: propertyName COLON expression SEMICOLON;
+declaration: propertyName COLON expression SEMICOLON | ifClause;
 propertyName: LOWER_IDENT;
 
 expression: multiplyOperation | addOperation | subtractOperation | literal;
@@ -27,6 +27,8 @@ variableReference: CAPITAL_IDENT;
 addOperation: literal PLUS expression;
 multiplyOperation: literal MUL expression;
 subtractOperation: literal MIN expression;
+
+ifClause: IF BOX_BRACKET_OPEN variableReference BOX_BRACKET_CLOSE body;
 
 
 //--- LEXER: ---
