@@ -1,5 +1,5 @@
 grammar ICSS;
-stylesheet: styleRule+ | variableAssignment+ styleRule+ | EOF;
+stylesheet: styleRule+ EOF | variableAssignment+ styleRule+  EOF;
 
 styleRule: selector body;
 
@@ -15,10 +15,18 @@ classSelector: CLASS_IDENT;
 // defining the content
 declaration: propertyName COLON expression SEMICOLON;
 propertyName: LOWER_IDENT;
-expression: COLOR | PIXELSIZE | TRUE | FALSE | PERCENTAGE | SCALAR | variableReference;
+
+expression: multiplyOperation | addOperation | subtractOperation | literal;
+literal: COLOR | PIXELSIZE | TRUE | FALSE | PERCENTAGE | SCALAR | variableReference;
+
 
 variableAssignment:  variableReference ASSIGNMENT_OPERATOR expression SEMICOLON;
 variableReference: CAPITAL_IDENT;
+
+
+addOperation: literal PLUS expression;
+multiplyOperation: literal MUL expression;
+subtractOperation: literal MIN expression;
 
 
 //--- LEXER: ---
