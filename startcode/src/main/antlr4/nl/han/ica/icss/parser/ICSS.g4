@@ -1,17 +1,21 @@
 grammar ICSS;
-stylesheet: item+ | EOF;
+stylesheet: styleRule+ | EOF;
 
-item: tagSelector+ | idSelector+ | classSelector+;
+styleRule: selector body;
 
 // the first symbols.
-tagSelector: LOWER_IDENT OPEN_BRACE decleration+ CLOSE_BRACE;
-idSelector: ID_IDENT OPEN_BRACE decleration+ CLOSE_BRACE;
-classSelector: CLASS_IDENT OPEN_BRACE decleration+ CLOSE_BRACE;
+
+selector: tagSelector | idSelector | classSelector;
+body: OPEN_BRACE decleration+ CLOSE_BRACE;
+
+tagSelector: LOWER_IDENT;
+idSelector: ID_IDENT;
+classSelector: CLASS_IDENT;
 
 // defining the content
-decleration: property expression SEMICOLON;
-property: LOWER_IDENT COLON;
-expression: COLOR | PIXELSIZE | TRUE | FALSE;
+decleration: propertyName COLON expression SEMICOLON;
+propertyName: LOWER_IDENT;
+expression: COLOR | PIXELSIZE | TRUE | FALSE | PERCENTAGE | SCALAR;
 
 
 
