@@ -3,6 +3,7 @@ package nl.han.ica.icss.parser;
 import java.util.Stack;
 
 import nl.han.ica.icss.ast.*;
+import nl.han.ica.icss.ast.literals.BoolLiteral;
 import nl.han.ica.icss.ast.literals.ColorLiteral;
 import nl.han.ica.icss.ast.literals.PixelLiteral;
 import nl.han.ica.icss.ast.selectors.ClassSelector;
@@ -74,15 +75,22 @@ public class ASTListener extends ICSSBaseListener {
     }
 
     @Override
+    public void exitDeclaration(ICSSParser.DeclarationContext ctx) {
+        this.currentContainer.pop();
+    }
+
+    @Override
     public void enterColorLiteral(ICSSParser.ColorLiteralContext ctx) {
         ColorLiteral colorLiteral = new ColorLiteral(ctx.getText());
         this.currentContainer.peek().addChild(colorLiteral);
+        this.currentContainer.push(colorLiteral);
     }
 
     @Override
     public void enterPixelLiteral(ICSSParser.PixelLiteralContext ctx) {
         PixelLiteral pixelLiteral = new PixelLiteral(ctx.getText());
         this.currentContainer.peek().addChild(pixelLiteral);
+        this.currentContainer.push(pixelLiteral);
     }
 
     @Override
@@ -118,5 +126,41 @@ public class ASTListener extends ICSSBaseListener {
     public void exitClassSelector(ICSSParser.ClassSelectorContext ctx) {
         this.currentContainer.pop();
     }
-    
+
+    @Override
+    public void enterVariableAssignment(ICSSParser.VariableAssignmentContext ctx) {
+        VariableAssignment variableAssignment = new VariableAssignment();
+        this.currentContainer.peek().addChild(variableAssignment);
+        this.currentContainer.push(variableAssignment);
+    }
+
+    @Override
+    public void exitVariableAssignment(ICSSParser.VariableAssignmentContext ctx) {
+        this.currentContainer.pop();
+    }
+
+    @Override
+    public void enterVariableReference(ICSSParser.VariableReferenceContext ctx) {
+        VariableReference variableReference = new VariableReference(ctx.getText());
+        this.currentContainer.peek().addChild(variableReference);
+        this.currentContainer.push(variableReference);
+    }
+
+    @Override
+    public void exitVariableReference(ICSSParser.VariableReferenceContext ctx) {
+        this.currentContainer.pop();
+    }
+
+    @Override
+    public void enterBoolLiteral(ICSSParser.BoolLiteralContext ctx) {
+        BoolLiteral boolLiteral = new BoolLiteral(ctx.getText());
+        this.currentContainer.peek().addChild(boolLiteral);
+        this.currentContainer.push(boolLiteral);
+    }
+
+    @Override
+    public void exitBoolLiteral(ICSSParser.BoolLiteralContext ctx) {
+        this.currentContainer.pop();
+    }
+
 }

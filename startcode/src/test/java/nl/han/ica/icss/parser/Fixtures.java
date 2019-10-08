@@ -68,9 +68,9 @@ public class Fixtures {
 			AdjustColor := TRUE;
 			UseLinkColor := FALSE;
 		 */
-		stylesheet.addChild((new VariableAssignment())
-                .addChild(new VariableReference("LinkColor"))
-                .addChild(new ColorLiteral("#ff0000"))
+		stylesheet.addChild(
+				(new VariableAssignment())
+						.addChild(new VariableReference("LinkColor")).addChild(new ColorLiteral("#ff0000"))
         );
 		stylesheet.addChild((new VariableAssignment())
                 .addChild(new VariableReference("ParWidth"))
