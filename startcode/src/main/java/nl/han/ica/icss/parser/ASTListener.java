@@ -171,6 +171,14 @@ public class ASTListener extends ICSSBaseListener {
         if(!this.variables.containsKey(ctx.getText())){
             variableReference.setError("Referencing undefined variable on line: " + ctx.getText());
         }
+        if(this.currentContainer.peek() instanceof IfClause){
+            if(this.variables.containsKey(ctx.getText())) {
+                Expression expression = this.variables.get(ctx.getText());
+                if(!(expression instanceof BoolLiteral)){
+                    this.currentContainer.peek().setError("The if clause is not of the type boolean on line:" + ctx.getText());
+                }
+            }
+        }
         this.currentContainer.peek().addChild(variableReference);
         this.currentContainer.push(variableReference);
     }
@@ -237,7 +245,6 @@ public class ASTListener extends ICSSBaseListener {
         checkOperationValidility((Operation) this.currentContainer.pop(), ctx.getText());
     }
 
-    // TODO what do do if the comparison is on a variable?
     private void checkOperationValidility(Operation operation, String rule){
         Expression literalL = operation.lhs;
         Expression literalR = operation.rhs;
@@ -289,6 +296,8 @@ public class ASTListener extends ICSSBaseListener {
             this.variables.put(varName, expression);
         }
     }
+
+
 
     @Override
     public void exitScalarLiteral(ICSSParser.ScalarLiteralContext ctx) {
