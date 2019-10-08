@@ -1,5 +1,7 @@
 package nl.han.ica.icss.parser;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Stack;
 
 import nl.han.ica.icss.ast.*;
@@ -23,6 +25,8 @@ public class ASTListener extends ICSSBaseListener {
 
     //Use this to keep track of the parent nodes when recursively traversing the ast
     private Stack<ASTNode> currentContainer;
+    // variablesMap
+    private Map<String, String> variables = new HashMap<>();
 
     public ASTListener() {
         ast = new AST();
@@ -30,7 +34,7 @@ public class ASTListener extends ICSSBaseListener {
     }
 
     public AST getAST() {
-
+        System.out.println(this.variables);
         return ast;
     }
 
@@ -140,6 +144,7 @@ public class ASTListener extends ICSSBaseListener {
         VariableAssignment variableAssignment = new VariableAssignment();
         this.currentContainer.peek().addChild(variableAssignment);
         this.currentContainer.push(variableAssignment);
+        this.variables.put(ctx.variableReference().getText(), ctx.expression().getText());
     }
 
     @Override
@@ -150,6 +155,9 @@ public class ASTListener extends ICSSBaseListener {
     @Override
     public void enterVariableReference(ICSSParser.VariableReferenceContext ctx) {
         VariableReference variableReference = new VariableReference(ctx.getText());
+        if(!this.variables.containsKey(ctx.getText())){
+            variableReference.setError("Referencing undefined variable.");
+        }
         this.currentContainer.peek().addChild(variableReference);
         this.currentContainer.push(variableReference);
     }
