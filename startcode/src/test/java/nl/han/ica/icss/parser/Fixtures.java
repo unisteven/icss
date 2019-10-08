@@ -23,10 +23,8 @@ public class Fixtures {
 		*/
 		stylesheet.addChild((new Stylerule())
 				.addChild(new TagSelector("p"))
-				.addChild((new Declaration("background-color"))
-                        .addChild(new ColorLiteral("#ffffff")))
-				.addChild((new Declaration("width"))
-						.addChild(new PixelLiteral("500px")))
+				.addChild((new Declaration("background-color")).addChild(new ColorLiteral("#ffffff")))
+				.addChild((new Declaration("width")).addChild(new PixelLiteral("500px")))
 		);
 		/*
 		a {

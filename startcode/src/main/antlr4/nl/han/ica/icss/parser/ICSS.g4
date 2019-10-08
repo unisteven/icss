@@ -17,8 +17,12 @@ declaration: propertyName COLON expression SEMICOLON | ifClause;
 propertyName: LOWER_IDENT;
 
 expression: multiplyOperation | addOperation | subtractOperation | literal;
-literal: COLOR | PIXELSIZE | TRUE | FALSE | PERCENTAGE | SCALAR | variableReference;
-
+literal: colorLiteral | pixelLiteral | boolLiteral | percentageLiteral | scalarLiteral | variableReference;
+colorLiteral: COLOR;
+boolLiteral: TRUE | FALSE;
+percentageLiteral: PERCENTAGE;
+pixelLiteral: PIXELSIZE;
+scalarLiteral: SCALAR;
 
 variableAssignment:  variableReference ASSIGNMENT_OPERATOR expression SEMICOLON;
 variableReference: CAPITAL_IDENT;
