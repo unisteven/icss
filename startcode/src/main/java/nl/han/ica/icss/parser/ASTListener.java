@@ -261,6 +261,11 @@ public class ASTListener extends ICSSBaseListener {
             // they are not of the same type on the left and right side so error.
             operation.setError("There is an operation with two different types on line: " + rule);
         }
+        // check if the literal is a colour
+        if(literalL instanceof ColorLiteral || literalR instanceof ColorLiteral){
+            operation.setError("You can't use an operation on the Color type on line: " + rule);
+        }
+
         if(operation instanceof MultiplyOperation){
             if(!((literalL instanceof ScalarLiteral) && (literalR instanceof ScalarLiteral))){
                 operation.setError("You can't multiply two non scalar values on line: " + rule);
