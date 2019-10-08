@@ -72,7 +72,12 @@ public class ASTListener extends ICSSBaseListener {
 
     @Override
     public void enterDeclaration(ICSSParser.DeclarationContext ctx) {
-        Declaration declaration = new Declaration(ctx.propertyName().getText());
+        Declaration declaration;
+        if(ctx.propertyName() == null){
+            declaration = new Declaration();
+        }else{
+            declaration = new Declaration(ctx.propertyName().getText());
+        }
         this.currentContainer.peek().addChild(declaration);
         this.currentContainer.push(declaration);
     }
@@ -199,6 +204,18 @@ public class ASTListener extends ICSSBaseListener {
 
     @Override
     public void exitScalarLiteral(ICSSParser.ScalarLiteralContext ctx) {
+        this.currentContainer.pop();
+    }
+
+    @Override
+    public void enterIfClause(ICSSParser.IfClauseContext ctx) {
+        IfClause ifClause = new IfClause();
+        this.currentContainer.peek().addChild(ifClause);
+        this.currentContainer.push(ifClause);
+    }
+
+    @Override
+    public void exitIfClause(ICSSParser.IfClauseContext ctx) {
         this.currentContainer.pop();
     }
 }

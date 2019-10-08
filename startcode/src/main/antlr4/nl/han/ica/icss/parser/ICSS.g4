@@ -6,14 +6,15 @@ styleRule: selector body;
 // the first symbols.
 
 selector: tagSelector | idSelector | classSelector;
-body: OPEN_BRACE declaration+ CLOSE_BRACE;
+body: OPEN_BRACE declarations+ CLOSE_BRACE;
 
 tagSelector: LOWER_IDENT;
 idSelector: ID_IDENT;
 classSelector: CLASS_IDENT;
 
 // defining the content
-declaration: propertyName COLON expression SEMICOLON | ifClause;
+declarations: declaration+ | ifClause+;
+declaration: propertyName COLON expression SEMICOLON;
 propertyName: LOWER_IDENT;
 
 expression: multiplyOperation | addOperation | subtractOperation | literal;
