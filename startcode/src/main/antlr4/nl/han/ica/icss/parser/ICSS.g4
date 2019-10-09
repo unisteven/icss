@@ -33,7 +33,7 @@ addOperation: literal PLUS expression;
 multiplyOperation: literal MUL expression;
 subtractOperation: literal MIN expression;
 
-ifClause: IF BOX_BRACKET_OPEN variableReference BOX_BRACKET_CLOSE body;
+ifClause: IF BOX_BRACKET_OPEN expression BOX_BRACKET_CLOSE body;
 
 
 //--- LEXER: ---

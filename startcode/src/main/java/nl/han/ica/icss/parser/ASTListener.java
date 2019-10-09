@@ -23,8 +23,6 @@ public class ASTListener extends ICSSBaseListener {
 
     //Use this to keep track of the parent nodes when recursively traversing the ast
     private Stack<ASTNode> currentContainer;
-    // variablesMap
-//    private Map<String, Expression> variables = new HashMap<>();
 
     public ASTListener() {
         ast = new AST();
@@ -92,7 +90,6 @@ public class ASTListener extends ICSSBaseListener {
     public void enterColorLiteral(ICSSParser.ColorLiteralContext ctx) {
         ColorLiteral colorLiteral = new ColorLiteral(ctx.getText());
         this.currentContainer.peek().addChild(colorLiteral);
-//        this.setVariable(colorLiteral);
         this.currentContainer.push(colorLiteral);
     }
 
@@ -100,7 +97,6 @@ public class ASTListener extends ICSSBaseListener {
     public void enterPercentageLiteral(ICSSParser.PercentageLiteralContext ctx) {
         PercentageLiteral percentageLiteral = new PercentageLiteral(ctx.getText());
         this.currentContainer.peek().addChild(percentageLiteral);
-//        this.setVariable(percentageLiteral);
         this.currentContainer.push(percentageLiteral);
     }
 
@@ -113,7 +109,6 @@ public class ASTListener extends ICSSBaseListener {
     public void enterPixelLiteral(ICSSParser.PixelLiteralContext ctx) {
         PixelLiteral pixelLiteral = new PixelLiteral(ctx.getText());
         this.currentContainer.peek().addChild(pixelLiteral);
-//        this.setVariable(pixelLiteral);
         this.currentContainer.push(pixelLiteral);
     }
 
@@ -156,7 +151,6 @@ public class ASTListener extends ICSSBaseListener {
         VariableAssignment variableAssignment = new VariableAssignment();
         this.currentContainer.peek().addChild(variableAssignment);
         this.currentContainer.push(variableAssignment);
-//        this.variables.put(ctx.variableReference().getText(), null);
     }
 
 
@@ -168,17 +162,6 @@ public class ASTListener extends ICSSBaseListener {
     @Override
     public void enterVariableReference(ICSSParser.VariableReferenceContext ctx) {
         VariableReference variableReference = new VariableReference(ctx.getText());
-//        if(!this.variables.containsKey(ctx.getText())){
-//            variableReference.setError("Referencing undefined variable on line: " + ctx.getText());
-//        }
-//        if(this.currentContainer.peek() instanceof IfClause){
-//            if(this.variables.containsKey(ctx.getText())) {
-//                Expression expression = this.variables.get(ctx.getText());
-//                if(!(expression instanceof BoolLiteral)){
-//                    this.currentContainer.peek().setError("The if clause is not of the type boolean on line:" + ctx.getText());
-//                }
-//            }
-//        }
         this.currentContainer.peek().addChild(variableReference);
         this.currentContainer.push(variableReference);
     }
@@ -193,7 +176,6 @@ public class ASTListener extends ICSSBaseListener {
     public void enterBoolLiteral(ICSSParser.BoolLiteralContext ctx) {
         BoolLiteral boolLiteral = new BoolLiteral(ctx.getText());
         this.currentContainer.peek().addChild(boolLiteral);
-//        this.setVariable(boolLiteral);
         this.currentContainer.push(boolLiteral);
     }
 
@@ -209,93 +191,46 @@ public class ASTListener extends ICSSBaseListener {
     @Override
     public void enterAddOperation(ICSSParser.AddOperationContext ctx) {
         AddOperation addOperation = new AddOperation();
-//        checkOperationValidility(addOperation);
         this.currentContainer.peek().addChild(addOperation);
         this.currentContainer.push(addOperation);
     }
 
     @Override
     public void exitAddOperation(ICSSParser.AddOperationContext ctx) {
-//        checkOperationValidility((Operation) this.currentContainer.pop(), ctx.getText());
+        this.currentContainer.pop();
     }
 
     @Override
     public void enterMultiplyOperation(ICSSParser.MultiplyOperationContext ctx) {
         MultiplyOperation multiplyOperation = new MultiplyOperation();
-//        checkOperationValidility(multiplyOperation);
         this.currentContainer.peek().addChild(multiplyOperation);
         this.currentContainer.push(multiplyOperation);
     }
 
     @Override
     public void exitMultiplyOperation(ICSSParser.MultiplyOperationContext ctx) {
-//        checkOperationValidility((Operation) this.currentContainer.pop(), ctx.getText());
+        this.currentContainer.pop();
     }
 
     @Override
     public void enterSubtractOperation(ICSSParser.SubtractOperationContext ctx) {
         SubtractOperation subtractOperation = new SubtractOperation();
-//        checkOperationValidility(subtractOperation);
         this.currentContainer.peek().addChild(subtractOperation);
         this.currentContainer.push(subtractOperation);
     }
 
     @Override
     public void exitSubtractOperation(ICSSParser.SubtractOperationContext ctx) {
-//        checkOperationValidility((Operation) this.currentContainer.pop(), ctx.getText());
+        this.currentContainer.pop();
     }
-
-//    private void checkOperationValidility(Operation operation, String rule){
-//        Expression literalL = operation.lhs;
-//        Expression literalR = operation.rhs;
-//        // check if operation is in the variables list.
-//        if(operation.lhs instanceof VariableReference){
-//            VariableReference reference = (VariableReference) operation.lhs;
-//            if(this.variables.containsKey(reference.name)){
-//                // todo do something with the expression
-//                literalL = this.variables.get(reference.name);
-//            }
-//        }
-//        if(operation.rhs instanceof VariableReference){
-//            VariableReference reference = (VariableReference) operation.rhs;
-//            if(this.variables.containsKey(reference.name)){
-//                // todo do something with the expression
-//                literalR = this.variables.get(reference.name);
-//            }
-//        }
-//        // check if both sides are of the same type
-//        if(!(literalL.getClass().equals(literalR.getClass()))){
-//            // they are not of the same type on the left and right side so error.
-//            operation.setError("There is an operation with two different types on line: " + rule);
-//        }
-//        // check if the literal is a colour
-//        if(literalL instanceof ColorLiteral || literalR instanceof ColorLiteral){
-//            operation.setError("You can't use an operation on the Color type on line: " + rule);
-//        }
-//
-//        if(operation instanceof MultiplyOperation){
-//            if(!((literalL instanceof ScalarLiteral) && (literalR instanceof ScalarLiteral))){
-//                operation.setError("You can't multiply two non scalar values on line: " + rule);
-//            }
-//        }
-//    }
 
     @Override
     public void enterScalarLiteral(ICSSParser.ScalarLiteralContext ctx) {
         ScalarLiteral scalarLiteral = new ScalarLiteral(ctx.getText());
         this.currentContainer.peek().addChild(scalarLiteral);
-//        this.setVariable(scalarLiteral);
         this.currentContainer.push(scalarLiteral);
     }
 
-
-//    private void setVariable(Expression expression){
-//        if(this.currentContainer.peek() instanceof VariableAssignment){
-//            String varName = ((VariableAssignment) this.currentContainer.peek()).name.name;
-//            this.variables.remove(varName);
-//            this.variables.put(varName, expression);
-//        }
-//    }
 
 
 
