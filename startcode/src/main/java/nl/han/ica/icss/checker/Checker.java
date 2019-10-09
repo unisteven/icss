@@ -1,22 +1,29 @@
 package nl.han.ica.icss.checker;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import nl.han.ica.icss.ast.*;
-import nl.han.ica.icss.ast.literals.BoolLiteral;
-import nl.han.ica.icss.ast.literals.ColorLiteral;
-import nl.han.ica.icss.ast.literals.ScalarLiteral;
+import nl.han.ica.icss.ast.literals.*;
 import nl.han.ica.icss.ast.operations.MultiplyOperation;
 
 public class Checker {
 
     private Map<String, Expression> variables;
+    private Map<String, List<Class>> validCombinations = new HashMap<>();
     private ASTNode currentVariableAssignment;
     private ASTNode currentIfClauseAssignment;
 
     public void check(AST ast) {
         variables = new HashMap<>();
+        validCombinations.put("color", new ArrayList<>());
+        validCombinations.get("color").add(ColorLiteral.class);
+
+        validCombinations.put("width", new ArrayList<>());
+        validCombinations.get("width").add(PixelLiteral.class);
+        validCombinations.get("width").add(PercentageLiteral.class);
         this.checkRecursively(ast.root);
     }
 
@@ -25,13 +32,44 @@ public class Checker {
         // do the checks
         checkvariable(node);
         checkOperations(node);
-        this.checkIfClauses(node);
+        checkIfClauses(node);
+        checkValidCombination(node);
         if (node.getChildren().size() > 0) {
             for (ASTNode astNode : node.getChildren()) {
                 this.checkRecursively(astNode);
             }
         }
 
+    }
+
+    private void checkValidCombination(ASTNode node) {
+        if (node instanceof Declaration) {
+            Declaration declaration = (Declaration) node;
+            List<Class> list = this.validCombinations.get(declaration.property.name);
+            if (list == null) {
+                // TODO warning if a combination has not been set it means it is always valid.
+                return;
+            }
+            Expression expression = declaration.expression;
+            if (expression instanceof VariableReference) {
+                expression = variables.get(((VariableReference) expression).name);
+            }
+            if (expression instanceof Operation) {
+                Operation operation = (Operation) expression;
+                this.checkValidCombination(operation.lhs);
+                this.checkValidCombination(operation.rhs);
+                return;
+            }
+            boolean invalid = true; // invalid until proven
+            for (Class c : list) {
+                if (c.equals(expression.getClass())) {
+                    invalid = false;
+                }
+            }
+            if (invalid) {
+                node.setError("Invalid combination of types: " + declaration.property.name + " = " + expression.getNodeLabel());
+            }
+        }
     }
 
     private void checkOperations(ASTNode node) {
@@ -72,15 +110,15 @@ public class Checker {
     }
 
     // check if ifclause has a boolean value
-    public void checkIfClauses(ASTNode node){
-        if(node instanceof IfClause){
+    public void checkIfClauses(ASTNode node) {
+        if (node instanceof IfClause) {
             this.currentIfClauseAssignment = node;
         }
-        if(this.currentIfClauseAssignment != null){
-            if(((IfClause)this.currentIfClauseAssignment).conditionalExpression instanceof VariableReference){
+        if (this.currentIfClauseAssignment != null) {
+            if (((IfClause) this.currentIfClauseAssignment).conditionalExpression instanceof VariableReference) {
                 return;
             }
-            if(((IfClause)this.currentIfClauseAssignment).conditionalExpression instanceof BoolLiteral){
+            if (((IfClause) this.currentIfClauseAssignment).conditionalExpression instanceof BoolLiteral) {
                 return;
             }
             this.currentIfClauseAssignment.setError("The ifclause is not of the type boolean");
@@ -96,7 +134,7 @@ public class Checker {
             this.currentVariableAssignment = node;
         }
         if (node instanceof VariableReference) {
-            if(node instanceof BoolLiteral){
+            if (node instanceof BoolLiteral) {
                 // booleans are special cases
                 return;
             }

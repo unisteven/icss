@@ -194,6 +194,9 @@ public class MainGui extends Application {
         for(String e : pipeline.getErrors()) {
             feedbackPane.addLine(e);
         }
+        if (pipeline.isParsed()) {
+            feedbackPane.addLine("Parsing succeeded");
+        }
         astPane.update(pipeline.getAST());
         updateToolbar();
     }
@@ -217,6 +220,9 @@ public class MainGui extends Application {
        feedbackPane.clear();
        feedbackPane.addLine("Applying transformations...");
        pipeline.transform();
+        if (pipeline.isTransformed()) {
+            feedbackPane.addLine("Transformation succeeded");
+        }
        astPane.update(pipeline.getAST());
        updateToolbar();
     }
@@ -226,6 +232,7 @@ public class MainGui extends Application {
         feedbackPane.addLine("Generating output...");
 
         outputPane.setText(pipeline.generate());
+        feedbackPane.addLine("Generating succeeded");
         updateToolbar();
     }
 

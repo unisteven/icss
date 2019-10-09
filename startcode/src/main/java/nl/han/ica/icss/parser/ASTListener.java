@@ -219,6 +219,8 @@ public class ASTListener extends ICSSBaseListener {
         this.currentContainer.push(subtractOperation);
     }
 
+
+
     @Override
     public void exitSubtractOperation(ICSSParser.SubtractOperationContext ctx) {
         this.currentContainer.pop();

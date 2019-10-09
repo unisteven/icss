@@ -17,7 +17,7 @@ declarations: declaration+ | ifClause+;
 declaration: propertyName COLON expression SEMICOLON;
 propertyName: LOWER_IDENT;
 
-expression: multiplyOperation | addOperation | subtractOperation | literal;
+expression:  addOperation | subtractOperation | multiplyOperation | literal;
 literal: colorLiteral | pixelLiteral | boolLiteral | percentageLiteral | scalarLiteral | variableReference;
 colorLiteral: COLOR;
 boolLiteral: TRUE | FALSE;
@@ -58,7 +58,7 @@ ID_IDENT: '#' [a-z0-9\-]+;
 CLASS_IDENT: '.' [a-z0-9\-]+;
 
 //General identifiers
-LOWER_IDENT: [a-z0-9\-]+;
+LOWER_IDENT: [a-z] [a-z0-9\-]*;
 CAPITAL_IDENT: [A-Z] [A-Za-z0-9_]*;
 
 //All whitespace is skipped
