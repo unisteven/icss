@@ -4,13 +4,15 @@ import nl.han.ica.icss.checker.SemanticError;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public class AST {
 	//The root of the tree
 	public Stylesheet root;
+	public Map<String, Expression> variables;
 
-	public AST() {
+    public AST() {
 		root = new Stylesheet();
 	}
 	public AST(Stylesheet stylesheet) {

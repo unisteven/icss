@@ -18,12 +18,20 @@ public class Checker {
 
     public void check(AST ast) {
         variables = new HashMap<>();
+        ast.variables = variables;
         validCombinations.put("color", new ArrayList<>());
         validCombinations.get("color").add(ColorLiteral.class);
+
+        validCombinations.put("background-color", new ArrayList<>());
+        validCombinations.get("background-color").add(ColorLiteral.class);
 
         validCombinations.put("width", new ArrayList<>());
         validCombinations.get("width").add(PixelLiteral.class);
         validCombinations.get("width").add(PercentageLiteral.class);
+
+        validCombinations.put("height", new ArrayList<>());
+        validCombinations.get("height").add(PixelLiteral.class);
+        validCombinations.get("height").add(PercentageLiteral.class);
         this.checkRecursively(ast.root);
     }
 
