@@ -61,6 +61,8 @@ public class Checker {
             Expression expression = declaration.expression;
             if (expression instanceof VariableReference) {
                 expression = variables.get(((VariableReference) expression).name);
+                this.checkValidCombination(expression);
+                return;
             }
             if (expression instanceof Operation) {
                 Operation operation = (Operation) expression;
@@ -92,12 +94,18 @@ public class Checker {
             VariableReference reference = (VariableReference) operation.lhs;
             if (this.variables.containsKey(reference.name)) {
                 literalL = this.variables.get(reference.name);
+                operation.lhs = literalL;
+                this.checkOperations(operation);
+                return;
             }
         }
         if (operation.rhs instanceof VariableReference) {
             VariableReference reference = (VariableReference) operation.rhs;
             if (this.variables.containsKey(reference.name)) {
                 literalR = this.variables.get(reference.name);
+                operation.rhs = literalR;
+                this.checkOperations(operation);
+                return;
             }
         }
         // check if both sides are of the same type
@@ -150,16 +158,23 @@ public class Checker {
                 node.setError("Referencing undefined variable");
             }
         }
-        if (node instanceof Literal && this.currentVariableAssignment != null) {
-            this.addVariable((Literal) node);
+        if ((node instanceof Expression) && this.currentVariableAssignment != null) {
+            this.addVariable((Expression) node);
         }
     }
 
-    private void addVariable(Literal literal) {
-        String varName = ((VariableAssignment) this.currentVariableAssignment).name.name;
-        this.variables.remove(varName);
-        this.variables.put(varName, literal);
-        this.currentVariableAssignment = null;
+    private void addVariable(Expression literal) {
+        if(literal instanceof VariableReference){
+            String varName = ((VariableAssignment) this.currentVariableAssignment).name.name;
+            this.variables.remove(varName);
+            this.variables.put(varName, this.variables.get(((VariableReference) literal).name));
+        }
+        if(literal instanceof Literal) {
+            String varName = ((VariableAssignment) this.currentVariableAssignment).name.name;
+            this.variables.remove(varName);
+            this.variables.put(varName, literal);
+            this.currentVariableAssignment = null;
+        }
     }
 
 }
