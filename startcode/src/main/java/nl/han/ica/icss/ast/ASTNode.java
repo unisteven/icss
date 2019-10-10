@@ -82,4 +82,12 @@ public class ASTNode {
         }
         return true;
     }
+
+    public String getCssString() {
+        String css = "";
+        for(ASTNode node : this.getChildren()){
+            css += node.getCssString();
+        }
+        return css;
+    }
 }

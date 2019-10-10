@@ -154,6 +154,15 @@ public class Checker {
                 // booleans are special cases
                 return;
             }
+            ASTNode var = this.variables.get(((VariableReference) node).name);
+            if(var != null){
+                this.checkvariable(var);
+                return;
+//                if(var instanceof VariableReference){
+//
+//                    return;
+//                }
+            }
             if (!(this.variables.containsKey(((VariableReference) node).name))) {
                 node.setError("Referencing undefined variable");
             }

@@ -9,6 +9,7 @@ import nl.han.ica.icss.ast.operations.MultiplyOperation;
 import nl.han.ica.icss.ast.operations.SubtractOperation;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -24,12 +25,24 @@ public class EvalExpressions implements Transform {
     public void apply(AST ast) {
         variables = ast.variables;
         this.evaluateExpression(ast.root, ast.root);
+        // remove all variable assignments
+        this.removeVariableAssignment(ast.root, ast.root, null);
+    }
+
+    public void removeVariableAssignment(ASTNode node, ASTNode parent, Iterator iterator){
+        if(node instanceof VariableAssignment){
+            iterator.remove();
+            parent.removeChild(node);
+        }
+        Iterator<ASTNode> iter = node.getChildren().iterator();
+        while (iter.hasNext()){
+            this.removeVariableAssignment(iter.next(), node, iter);
+        }
     }
 
     public void evaluateExpression(ASTNode node, ASTNode parent) {
 
         if (node instanceof Expression) {
-            System.out.println("expression");
             if (node instanceof Operation) {
                 Operation operation = (Operation) node;
                 if (operation.lhs instanceof Operation) {
@@ -59,6 +72,13 @@ public class EvalExpressions implements Transform {
 //                    node = literal;
                     return;
                 }
+            }
+            if(node instanceof VariableReference){
+                parent.removeChild(node);
+                Expression expression = this.variables.get(((VariableReference) node).name);
+                parent.addChild(expression);
+                this.evaluateExpression(expression, parent);
+                return;
             }
         }
         for (ASTNode nodes : node.getChildren()) {

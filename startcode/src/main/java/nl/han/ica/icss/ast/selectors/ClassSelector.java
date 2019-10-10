@@ -32,4 +32,9 @@ public class ClassSelector extends Selector {
     public int hashCode() {
         return Objects.hash(cls);
     }
+
+    @Override
+    public String getCssString() {
+        return cls;
+    }
 }
