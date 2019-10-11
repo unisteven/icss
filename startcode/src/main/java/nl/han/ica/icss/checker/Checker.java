@@ -55,7 +55,6 @@ public class Checker {
             Declaration declaration = (Declaration) node;
             List<Class> list = this.validCombinations.get(declaration.property.name);
             if (list == null) {
-                // TODO warning if a combination has not been set it means it is always valid.
                 return;
             }
             Expression expression = declaration.expression;
@@ -89,13 +88,25 @@ public class Checker {
         Operation operation = (Operation) node;
         Expression literalL = operation.lhs;
         Expression literalR = operation.rhs;
+        // check if operation exists out of multiple operations
+        if(operation.lhs instanceof Operation){
+            this.checkOperations(operation.lhs);
+            return;
+        }
+        if(operation.rhs instanceof Operation){
+            this.checkOperations(operation.rhs);
+            return;
+        }
+
         // check if operation is in the variables list.
         if (operation.lhs instanceof VariableReference) {
             VariableReference reference = (VariableReference) operation.lhs;
             if (this.variables.containsKey(reference.name)) {
                 literalL = this.variables.get(reference.name);
+                Expression prev = operation.lhs;
                 operation.lhs = literalL;
                 this.checkOperations(operation);
+                operation.lhs = prev;
                 return;
             }
         }
@@ -103,8 +114,10 @@ public class Checker {
             VariableReference reference = (VariableReference) operation.rhs;
             if (this.variables.containsKey(reference.name)) {
                 literalR = this.variables.get(reference.name);
+                Expression prev = operation.rhs;
                 operation.rhs = literalR;
                 this.checkOperations(operation);
+                operation.rhs = prev;
                 return;
             }
         }
@@ -158,10 +171,6 @@ public class Checker {
             if(var != null){
                 this.checkvariable(var);
                 return;
-//                if(var instanceof VariableReference){
-//
-//                    return;
-//                }
             }
             if (!(this.variables.containsKey(((VariableReference) node).name))) {
                 node.setError("Referencing undefined variable");

@@ -51,4 +51,5 @@ public class AST {
 	public int hashCode() {
 		return Objects.hash(root);
 	}
+
 }

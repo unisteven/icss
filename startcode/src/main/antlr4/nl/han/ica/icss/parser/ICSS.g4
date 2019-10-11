@@ -17,7 +17,7 @@ declarations: declaration+ | ifClause+;
 declaration: propertyName COLON expression SEMICOLON;
 propertyName: LOWER_IDENT;
 
-expression:  addOperation | subtractOperation | multiplyOperation | literal;
+expression:  multiplyOperation | addOperation | subtractOperation |  literal;
 literal: colorLiteral | pixelLiteral | boolLiteral | percentageLiteral | scalarLiteral | variableReference;
 colorLiteral: COLOR;
 boolLiteral: TRUE | FALSE;

@@ -23,6 +23,7 @@ public class EvalExpressions implements Transform {
 
     @Override
     public void apply(AST ast) {
+        // TODO when a  variable contains a expressions it doesnt calculate the value
         variables = ast.variables;
         this.evaluateExpression(ast.root, ast.root);
         // remove all variable assignments
@@ -69,6 +70,12 @@ public class EvalExpressions implements Transform {
                 if (literal != null) {
                     parent.removeChild(node);
                     parent.addChild(literal);
+                    // replace the variable
+                    if(parent instanceof VariableAssignment){
+                        String name = ((VariableAssignment) parent).name.name;
+                        this.variables.remove(name);
+                        this.variables.put(name, literal);
+                    }
 //                    node = literal;
                     return;
                 }
@@ -77,6 +84,12 @@ public class EvalExpressions implements Transform {
                 parent.removeChild(node);
                 Expression expression = this.variables.get(((VariableReference) node).name);
                 parent.addChild(expression);
+                if(parent instanceof VariableAssignment){
+                    if(((VariableAssignment) parent).expression instanceof Operation){
+                        this.evaluateExpression(((VariableAssignment) parent).expression, parent);
+                        return;
+                    }
+                }
                 this.evaluateExpression(expression, parent);
                 return;
             }
