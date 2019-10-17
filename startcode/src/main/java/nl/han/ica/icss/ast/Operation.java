@@ -18,6 +18,17 @@ public abstract class Operation extends Expression {
     }
 
     @Override
+    public ASTNode removeChild(ASTNode child) {
+        if(lhs == child){
+            lhs = null;
+        }
+        if(rhs == child){
+            rhs = null;
+        }
+        return this;
+    }
+
+    @Override
     public ASTNode addChild(ASTNode child) {
         if(lhs == null) {
             lhs = (Expression) child;

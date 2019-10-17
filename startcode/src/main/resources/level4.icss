@@ -1,0 +1,5 @@
+LinkColor := 15px;
+
+.menu {
+    background-color: LinkColor + 20px - 10px;
+}

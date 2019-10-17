@@ -68,8 +68,29 @@ public class EvalExpressions implements Transform {
                 }
                 Literal literal = solveOperation(operation, operation.lhs, operation.rhs);
                 if (literal != null) {
-                    parent.removeChild(node);
-                    parent.addChild(literal);
+//                    parent.removeChild(node);
+//                    parent.addChild(literal);
+//                    node = literal;
+                    if(parent instanceof Declaration){
+                        Declaration declaration = (Declaration) parent;
+                        if(declaration.expression == node){
+                            // this means we just calculated the result
+                            declaration.removeChild(node);
+                            declaration.addChild(literal);
+                        }
+                        if(declaration.expression instanceof Operation){
+                            Operation op = (Operation) declaration.expression;
+                            if(op.lhs == operation){
+                                op.removeChild(node);
+                                op.addChild(node);
+                            }
+                            if(op.rhs == operation){
+                                op.removeChild(operation);
+                                op.addChild(literal);
+                            }
+                            this.evaluateExpression(op, declaration);
+                        }
+                    }
                     // replace the variable
                     if(parent instanceof VariableAssignment){
                         String name = ((VariableAssignment) parent).name.name;
