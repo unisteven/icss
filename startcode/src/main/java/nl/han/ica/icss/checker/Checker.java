@@ -122,9 +122,12 @@ public class Checker {
             }
         }
         // check if both sides are of the same type
-        if (!(literalL.getClass().equals(literalR.getClass()))) {
-            // they are not of the same type on the left and right side so error.
-            operation.setError("There is an operation with two different types on line: ");
+        if(!(operation instanceof MultiplyOperation)){
+            // only check this if it is not a multiply operation because that should accept scalar values too
+            if (!(literalL.getClass().equals(literalR.getClass()))) {
+                // they are not of the same type on the left and right side so error.
+                operation.setError("There is an operation with two different types on line: ");
+            }
         }
         // check if the literal is a colour
         if (literalL instanceof ColorLiteral || literalR instanceof ColorLiteral) {
@@ -132,7 +135,7 @@ public class Checker {
         }
 
         if (operation instanceof MultiplyOperation) {
-            if (!((literalL instanceof ScalarLiteral) && (literalR instanceof ScalarLiteral))) {
+            if (!((literalL instanceof ScalarLiteral) || (literalR instanceof ScalarLiteral))) {
                 operation.setError("You can't multiply two non scalar values on line: ");
             }
         }
