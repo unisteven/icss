@@ -51,6 +51,7 @@ public class ASTListener extends ICSSBaseListener {
         this.currentContainer.peek().addChild(stylerule);
         this.currentContainer.push(stylerule);
     }
+
     @Override
     public void exitStyleRule(ICSSParser.StyleRuleContext ctx) {
         this.currentContainer.pop();
@@ -72,9 +73,9 @@ public class ASTListener extends ICSSBaseListener {
     @Override
     public void enterDeclaration(ICSSParser.DeclarationContext ctx) {
         Declaration declaration;
-        if(ctx.propertyName() == null){
+        if (ctx.propertyName() == null) {
             declaration = new Declaration();
-        }else{
+        } else {
             declaration = new Declaration(ctx.propertyName().getText());
         }
         this.currentContainer.peek().addChild(declaration);
@@ -180,50 +181,38 @@ public class ASTListener extends ICSSBaseListener {
     }
 
 
-
     @Override
     public void exitBoolLiteral(ICSSParser.BoolLiteralContext ctx) {
         this.currentContainer.pop();
     }
 
-
-
     @Override
-    public void enterAddOperation(ICSSParser.AddOperationContext ctx) {
-        AddOperation addOperation = new AddOperation();
-        this.currentContainer.peek().addChild(addOperation);
-        this.currentContainer.push(addOperation);
+    public void enterOperation(ICSSParser.OperationContext ctx) {
+        if (ctx.MIN() != null) {
+            SubtractOperation subtractOperation = new SubtractOperation();
+            this.currentContainer.peek().addChild(subtractOperation);
+            this.currentContainer.push(subtractOperation);
+            return;
+        }
+        if (ctx.MUL() != null) {
+            MultiplyOperation multiplyOperation = new MultiplyOperation();
+            this.currentContainer.peek().addChild(multiplyOperation);
+            this.currentContainer.push(multiplyOperation);
+            return;
+        }
+        if (ctx.PLUS() != null) {
+            AddOperation addOperation = new AddOperation();
+            this.currentContainer.peek().addChild(addOperation);
+            this.currentContainer.push(addOperation);
+            return;
+        }
     }
 
     @Override
-    public void exitAddOperation(ICSSParser.AddOperationContext ctx) {
-        this.currentContainer.pop();
-    }
-
-    @Override
-    public void enterMultiplyOperation(ICSSParser.MultiplyOperationContext ctx) {
-        MultiplyOperation multiplyOperation = new MultiplyOperation();
-        this.currentContainer.peek().addChild(multiplyOperation);
-        this.currentContainer.push(multiplyOperation);
-    }
-
-    @Override
-    public void exitMultiplyOperation(ICSSParser.MultiplyOperationContext ctx) {
-        this.currentContainer.pop();
-    }
-
-    @Override
-    public void enterSubtractOperation(ICSSParser.SubtractOperationContext ctx) {
-        SubtractOperation subtractOperation = new SubtractOperation();
-        this.currentContainer.peek().addChild(subtractOperation);
-        this.currentContainer.push(subtractOperation);
-    }
-
-
-
-    @Override
-    public void exitSubtractOperation(ICSSParser.SubtractOperationContext ctx) {
-        this.currentContainer.pop();
+    public void exitOperation(ICSSParser.OperationContext ctx) {
+        if(ctx.PLUS() != null | ctx.MIN() != null | ctx.MUL() != null){
+            this.currentContainer.pop();
+        }
     }
 
     @Override
@@ -232,8 +221,6 @@ public class ASTListener extends ICSSBaseListener {
         this.currentContainer.peek().addChild(scalarLiteral);
         this.currentContainer.push(scalarLiteral);
     }
-
-
 
 
     @Override
