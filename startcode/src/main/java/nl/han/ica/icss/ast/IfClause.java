@@ -50,6 +50,12 @@ public class IfClause extends ASTNode {
     }
 
     @Override
+    public ASTNode removeChild(ASTNode child) {
+        this.body.remove(child);
+        return this;
+    }
+
+    @Override
     public int hashCode() {
         return Objects.hash(conditionalExpression, body);
     }

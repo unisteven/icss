@@ -135,18 +135,20 @@ public class Checker {
 
     // check if ifclause has a boolean value
     public void checkIfClauses(ASTNode node) {
-        if (node instanceof IfClause) {
+        if(node instanceof IfClause){
             this.currentIfClauseAssignment = node;
         }
-        if (this.currentIfClauseAssignment != null) {
-            if (((IfClause) this.currentIfClauseAssignment).conditionalExpression instanceof VariableReference) {
-                return;
+        if(this.currentIfClauseAssignment == null){
+            return; // if there is no current if clause no need to check.
+        }
+        if(node instanceof VariableReference){
+            this.checkIfClauses(this.variables.get(((VariableReference) node).name));
+        }
+        if(node instanceof Literal){
+            if(!(node instanceof BoolLiteral)){
+                this.currentIfClauseAssignment.setError("The ifclause is not of the type boolean");
             }
-            if (((IfClause) this.currentIfClauseAssignment).conditionalExpression instanceof BoolLiteral) {
-                return;
-            }
-            this.currentIfClauseAssignment.setError("The ifclause is not of the type boolean");
-            this.currentIfClauseAssignment = null;
+            this.currentIfClauseAssignment = null; // reset current ifclause
         }
 
     }

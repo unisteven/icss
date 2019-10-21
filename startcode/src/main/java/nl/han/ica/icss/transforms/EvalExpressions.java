@@ -54,16 +54,13 @@ public class EvalExpressions implements Transform {
 
     public Literal calculateExpression(Expression expression){
         if(expression instanceof Literal){
-            System.out.println("literal");
             return (Literal) expression;
         }
         if(expression instanceof VariableReference){
-                System.out.println("variable:" + ((VariableReference) expression).name);
                 Expression var = this.variables.get(((VariableReference) expression).name);
                 return this.calculateExpression(var);
         }
         if(expression instanceof Operation){
-            System.out.println("operation");
             Literal lr = this.calculateExpression(((Operation) expression).rhs);
             Literal ll = this.calculateExpression(((Operation) expression).lhs);
             // do the operation
