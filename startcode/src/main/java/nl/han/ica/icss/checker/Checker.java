@@ -113,29 +113,29 @@ public class Checker {
             if(literalL == null || literalR == null){
                 return null;
             }
-            // check if it matches the requirements
             if (!(expression instanceof MultiplyOperation)) {
                 // only check this if it is not a multiply operation because that should accept scalar values too
                 if (!(literalL.getClass().equals(literalR.getClass()))) {
                     // they are not of the same type on the left and right side so error.
                     expression.setError("There is an operation with two different types on line: ");
+                    return null;
                 }
-                return null;
-            }
-            // check if the literal is a colour
-            if (literalL instanceof ColorLiteral || literalR instanceof ColorLiteral) {
-                expression.setError("You can't use an operation on the Color type on line: ");
-                return null;
-            }
+            }else {
+                // check if the literal is a colour
+                if (literalL instanceof ColorLiteral || literalR instanceof ColorLiteral) {
+                    expression.setError("You can't use an operation on the Color type on line: ");
+                    return null;
+                }
 
-            if (!((literalL instanceof ScalarLiteral) || (literalR instanceof ScalarLiteral))) {
-                expression.setError("You can't multiply two non scalar values on line: ");
-                return null;
-            }
-            if(literalL instanceof ScalarLiteral){
-                return literalR; // return the correct type.
-            }else{
-                return literalL;
+                if (!((literalL instanceof ScalarLiteral) || (literalR instanceof ScalarLiteral))) {
+                    expression.setError("You can't multiply two non scalar values on line: ");
+                    return null;
+                }
+                if (literalL instanceof ScalarLiteral) {
+                    return literalR; // return the correct type.
+                } else {
+                    return literalL;
+                }
             }
         }
         return null;
