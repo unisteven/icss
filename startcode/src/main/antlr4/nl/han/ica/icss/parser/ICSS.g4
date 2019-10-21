@@ -6,7 +6,7 @@ styleRule: selector body;
 // the first symbols.
 
 selector: tagSelector | idSelector | classSelector;
-body: OPEN_BRACE declarations+ CLOSE_BRACE;
+body: OPEN_BRACE (declarations+ | variableAssignment+ declarations+) CLOSE_BRACE;
 
 tagSelector: LOWER_IDENT;
 idSelector: ID_IDENT;

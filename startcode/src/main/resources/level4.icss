@@ -3,3 +3,9 @@ LinkColor := 15px ;
 .menu {
     width: LinkColor * 2 + 20px * 10 + 100px;
 }
+
+
+a {
+	ScopeVar2:= 10px;
+        width: ScopeVar2 - 2 * 5px;
+}

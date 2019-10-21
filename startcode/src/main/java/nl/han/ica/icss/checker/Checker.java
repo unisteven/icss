@@ -81,64 +81,56 @@ public class Checker {
         }
     }
 
-    private void checkOperations(ASTNode node) {
-        if (!(node instanceof Operation)) {
-            return;
-        }
-        Operation operation = (Operation) node;
-        Expression literalL = operation.lhs;
-        Expression literalR = operation.rhs;
-        // check if operation exists out of multiple operations
-        if(operation.lhs instanceof Operation){
-            this.checkOperations(operation.lhs);
-            return;
-        }
-        if(operation.rhs instanceof Operation){
-            this.checkOperations(operation.rhs);
-            return;
+    private Literal checkOperations(ASTNode node) {
+        if (node == null) {
+            return null; // end condition
         }
 
-        // check if operation is in the variables list.
-        if (operation.lhs instanceof VariableReference) {
-            VariableReference reference = (VariableReference) operation.lhs;
-            if (this.variables.containsKey(reference.name)) {
-                literalL = this.variables.get(reference.name);
-                Expression prev = operation.lhs;
-                operation.lhs = literalL;
-                this.checkOperations(operation);
-                operation.lhs = prev;
-                return;
-            }
-        }
-        if (operation.rhs instanceof VariableReference) {
-            VariableReference reference = (VariableReference) operation.rhs;
-            if (this.variables.containsKey(reference.name)) {
-                literalR = this.variables.get(reference.name);
-                Expression prev = operation.rhs;
-                operation.rhs = literalR;
-                this.checkOperations(operation);
-                operation.rhs = prev;
-                return;
-            }
-        }
-        // check if both sides are of the same type
-        if(!(operation instanceof MultiplyOperation)){
-            // only check this if it is not a multiply operation because that should accept scalar values too
-            if (!(literalL.getClass().equals(literalR.getClass()))) {
-                // they are not of the same type on the left and right side so error.
-                operation.setError("There is an operation with two different types on line: ");
-            }
-        }
-        // check if the literal is a colour
-        if (literalL instanceof ColorLiteral || literalR instanceof ColorLiteral) {
-            operation.setError("You can't use an operation on the Color type on line: ");
+        if (!(node instanceof Expression)) {
+            return null;
         }
 
-        if (operation instanceof MultiplyOperation) {
+        Expression expression = (Expression) node;
+
+        if (expression instanceof Literal) {
+            return (Literal) expression;
+        }
+        if (expression instanceof VariableReference) {
+            Expression var = this.variables.get(((VariableReference) expression).name);
+            return this.checkOperations(var);
+        }
+        if (expression instanceof Operation) {
+            Literal literalR = this.checkOperations(((Operation) expression).rhs);
+            Literal literalL = this.checkOperations(((Operation) expression).lhs);
+            if(literalL == null || literalR == null){
+                return null;
+            }
+            // check if it matches the requirements
+            if (!(expression instanceof MultiplyOperation)) {
+                // only check this if it is not a multiply operation because that should accept scalar values too
+                if (!(literalL.getClass().equals(literalR.getClass()))) {
+                    // they are not of the same type on the left and right side so error.
+                    expression.setError("There is an operation with two different types on line: ");
+                }
+                return null;
+            }
+            // check if the literal is a colour
+            if (literalL instanceof ColorLiteral || literalR instanceof ColorLiteral) {
+                expression.setError("You can't use an operation on the Color type on line: ");
+                return null;
+            }
+
             if (!((literalL instanceof ScalarLiteral) || (literalR instanceof ScalarLiteral))) {
-                operation.setError("You can't multiply two non scalar values on line: ");
+                expression.setError("You can't multiply two non scalar values on line: ");
+                return null;
+            }
+            if(literalL instanceof ScalarLiteral){
+                return literalR; // return the correct type.
+            }else{
+                return literalL;
             }
         }
+        return null;
     }
 
     // check if ifclause has a boolean value
@@ -171,7 +163,7 @@ public class Checker {
                 return;
             }
             ASTNode var = this.variables.get(((VariableReference) node).name);
-            if(var != null){
+            if (var != null) {
                 this.checkvariable(var);
                 return;
             }
@@ -185,11 +177,11 @@ public class Checker {
     }
 
     private void addVariable(Expression expression) {
-        if(expression instanceof VariableReference){
+        if (expression instanceof VariableReference) {
             String varName = ((VariableAssignment) this.currentVariableAssignment).name.name;
             this.variables.remove(varName);
             this.variables.put(varName, this.variables.get(((VariableReference) expression).name));
-        }else{
+        } else {
             String varName = ((VariableAssignment) this.currentVariableAssignment).name.name;
             this.variables.remove(varName);
             this.variables.put(varName, expression);
