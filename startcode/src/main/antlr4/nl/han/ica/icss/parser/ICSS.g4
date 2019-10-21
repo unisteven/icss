@@ -29,9 +29,6 @@ variableAssignment:  variableReference ASSIGNMENT_OPERATOR expression SEMICOLON;
 variableReference: CAPITAL_IDENT;
 
 operation: operation MUL operation | operation (MIN | PLUS) operation | literal;
-//addOperation: literal PLUS expression;
-//multiplyOperation: literal MUL expression;
-//subtractOperation: literal MIN expression;
 
 ifClause: IF BOX_BRACKET_OPEN expression BOX_BRACKET_CLOSE body;
 

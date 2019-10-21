@@ -24,7 +24,7 @@ public class EvalExpressions implements Transform {
     @Override
     public void apply(AST ast) {
         variables = ast.variables;
-        this.evaluateExpression(ast.root, ast.root);
+        this.evalExpression(ast.root, ast.root);
         // remove all variable assignments
         this.removeVariableAssignment(ast.root, ast.root, null);
     }
@@ -40,82 +40,38 @@ public class EvalExpressions implements Transform {
         }
     }
 
-    public void evaluateExpression(ASTNode node, ASTNode parent) {
-
-        if (node instanceof Expression) {
-            if (node instanceof Operation) {
-                Operation operation = (Operation) node;
-                if (operation.lhs instanceof Operation) {
-                    this.evaluateExpression(operation.lhs, parent);
-                    return;
-                }
-                if (operation.rhs instanceof Operation) {
-                    this.evaluateExpression(operation.rhs, parent);
-                    return;
-                }
-                if (operation.lhs instanceof VariableReference) {
-                    VariableReference reference = (VariableReference) operation.lhs;
-                    operation.lhs = this.variables.get(reference.name);
-                    this.evaluateExpression(operation, parent);
-                    return;
-                }
-                if (operation.rhs instanceof VariableReference) {
-                    VariableReference reference = (VariableReference) operation.rhs;
-                    operation.rhs = this.variables.get(reference.name);
-                    this.evaluateExpression(operation, parent);
-                    return;
-                }
-                Literal literal = solveOperation(operation, operation.lhs, operation.rhs);
-                if (literal != null) {
-                    if (parent instanceof Declaration) {
-                        Declaration declaration = (Declaration) parent;
-                        if (declaration.expression == node) {
-                            // this means we just calculated the result
-                            declaration.removeChild(node);
-                            declaration.addChild(literal);
-                        }
-                        if (declaration.expression instanceof Operation) {
-                            Operation op = (Operation) declaration.expression;
-                            if (op.lhs == operation) {
-                                op.removeChild(node);
-                                op.addChild(literal);
-                            }
-                            if (op.rhs == operation) {
-                                op.removeChild(operation);
-                                op.addChild(literal);
-                            }
-                            this.evaluateExpression(op, declaration);
-                        }
-                    }
-                    // replace the variable
-                    if (parent instanceof VariableAssignment) {
-                        String name = ((VariableAssignment) parent).name.name;
-                        this.variables.remove(name);
-                        this.variables.put(name, literal);
-                    }
-//                    node = literal;
-                    return;
-                }
-            }
-            if (node instanceof VariableReference) {
-                parent.removeChild(node);
-                Expression expression = this.variables.get(((VariableReference) node).name);
-                parent.addChild(expression);
-                if (parent instanceof VariableAssignment) {
-                    if (((VariableAssignment) parent).expression instanceof Operation) {
-                        this.evaluateExpression(((VariableAssignment) parent).expression, parent);
-                        return;
-                    }
-                }
-                this.evaluateExpression(expression, parent);
-                return;
-            }
+    public void evalExpression(ASTNode node, ASTNode parent){
+        if(node instanceof Expression){
+            // if it is an expression calculate the value and replace it of the root.
+            Literal l = this.calculateExpression((Expression) node);
+            parent.removeChild(node);
+            parent.addChild(l);
         }
-        for (ASTNode nodes : node.getChildren()) {
-            this.evaluateExpression(nodes, node);
+        for(ASTNode nodes : node.getChildren()){
+            this.evalExpression(nodes, node);
         }
-
     }
+
+    public Literal calculateExpression(Expression expression){
+        if(expression instanceof Literal){
+            System.out.println("literal");
+            return (Literal) expression;
+        }
+        if(expression instanceof VariableReference){
+                System.out.println("variable:" + ((VariableReference) expression).name);
+                Expression var = this.variables.get(((VariableReference) expression).name);
+                return this.calculateExpression(var);
+        }
+        if(expression instanceof Operation){
+            System.out.println("operation");
+            Literal lr = this.calculateExpression(((Operation) expression).rhs);
+            Literal ll = this.calculateExpression(((Operation) expression).lhs);
+            // do the operation
+            return this.solveOperation((Operation) expression, ll, lr);
+        }
+        return null;
+    }
+
 
     private Literal solveOperation(Operation operation, Expression expressionleft, Expression expressionright) {
         if (operation instanceof MultiplyOperation) {
@@ -147,12 +103,6 @@ public class EvalExpressions implements Transform {
                     return new PercentageLiteral(value);
                 }
             }
-//            if (expressionleft instanceof ScalarLiteral) {
-//                ScalarLiteral literalL = (ScalarLiteral) expressionleft;
-//                ScalarLiteral literalR = (ScalarLiteral) expressionright;
-//                int value = literalL.value * literalR.value;
-//                return new ScalarLiteral(value);
-//            }
         }
         if (operation instanceof SubtractOperation) {
             if (expressionleft instanceof ScalarLiteral) {
