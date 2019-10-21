@@ -41,7 +41,7 @@ public class Checker {
         checkvariable(node);
         checkOperations(node);
         checkIfClauses(node);
-        checkValidCombination(node);
+        checkValidCombination(node, node);
         if (node.getChildren().size() > 0) {
             for (ASTNode astNode : node.getChildren()) {
                 this.checkRecursively(astNode);
@@ -50,7 +50,25 @@ public class Checker {
 
     }
 
-    private void checkValidCombination(ASTNode node) {
+    private void checkValidCombination(ASTNode node, ASTNode parent) {
+        if(node instanceof Literal){
+            if(parent instanceof Declaration) {
+                Declaration declaration = (Declaration) parent;
+                List<Class> list = this.validCombinations.get(declaration.property.name);
+                if (list == null) {
+                    return;
+                }
+                boolean invalid = true; // invalid until proven
+                for (Class c : list) {
+                    if (c.equals(node.getClass())) {
+                        invalid = false;
+                    }
+                }
+                if (invalid) {
+                    declaration.setError("Invalid combination of types: " + declaration.property.name + " = " + declaration.expression.getNodeLabel());
+                }
+            }
+        }
         if (node instanceof Declaration) {
             Declaration declaration = (Declaration) node;
             List<Class> list = this.validCombinations.get(declaration.property.name);
@@ -60,23 +78,13 @@ public class Checker {
             Expression expression = declaration.expression;
             if (expression instanceof VariableReference) {
                 expression = variables.get(((VariableReference) expression).name);
-                this.checkValidCombination(expression);
+                this.checkValidCombination(expression, node);
                 return;
             }
             if (expression instanceof Operation) {
                 Operation operation = (Operation) expression;
-                this.checkValidCombination(operation.lhs);
-                this.checkValidCombination(operation.rhs);
-                return;
-            }
-            boolean invalid = true; // invalid until proven
-            for (Class c : list) {
-                if (c.equals(expression.getClass())) {
-                    invalid = false;
-                }
-            }
-            if (invalid) {
-                node.setError("Invalid combination of types: " + declaration.property.name + " = " + expression.getNodeLabel());
+                this.checkValidCombination(operation.lhs, node);
+                this.checkValidCombination(operation.rhs, node);
             }
         }
     }
