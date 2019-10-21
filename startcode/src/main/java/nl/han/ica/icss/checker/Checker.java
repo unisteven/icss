@@ -184,16 +184,15 @@ public class Checker {
         }
     }
 
-    private void addVariable(Expression literal) {
-        if(literal instanceof VariableReference){
+    private void addVariable(Expression expression) {
+        if(expression instanceof VariableReference){
             String varName = ((VariableAssignment) this.currentVariableAssignment).name.name;
             this.variables.remove(varName);
-            this.variables.put(varName, this.variables.get(((VariableReference) literal).name));
-        }
-        if(literal instanceof Literal) {
+            this.variables.put(varName, this.variables.get(((VariableReference) expression).name));
+        }else{
             String varName = ((VariableAssignment) this.currentVariableAssignment).name.name;
             this.variables.remove(varName);
-            this.variables.put(varName, literal);
+            this.variables.put(varName, expression);
             this.currentVariableAssignment = null;
         }
     }
