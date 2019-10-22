@@ -164,14 +164,10 @@ public class Checker {
     // check if variables are defined
     public void checkvariable(ASTNode node) {
         if (node instanceof VariableAssignment) {
-            this.variables.put(((VariableAssignment) node).name.name, null);
+            this.variables.put(((VariableAssignment) node).name.name, ((VariableAssignment) node).expression);
             this.currentVariableAssignment = node;
         }
         if (node instanceof VariableReference) {
-            if (node instanceof BoolLiteral) {
-                // booleans are special cases
-                return;
-            }
             ASTNode var = this.variables.get(((VariableReference) node).name);
             if (var != null) {
                 this.checkvariable(var);

@@ -1,6 +1,7 @@
 package nl.han.ica.icss.ast;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class Stylerule extends ASTNode {
@@ -72,5 +73,19 @@ public class Stylerule extends ASTNode {
 		}
     	css += "} \n";
 		return css;
+	}
+
+	public void replaceNode(IfClause ifClause, ArrayList<ASTNode> body) {
+    	int index = this.body.indexOf(ifClause);
+		ArrayList<ASTNode> children = new ArrayList<>();
+		for (int i = 0; i < this.body.size(); i++) {
+			if(i == index){
+				// insert all from body
+				children.addAll(body);
+				continue;
+			}
+			children.add(this.body.get(i));
+		}
+		this.body = children;
 	}
 }

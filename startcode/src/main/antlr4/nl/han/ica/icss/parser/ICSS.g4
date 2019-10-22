@@ -1,5 +1,5 @@
 grammar ICSS;
-stylesheet: styleRule+ EOF | variableAssignment+ styleRule+  EOF;
+styles9heet: styleRule+ EOF | variableAssignment+ styleRule+  EOF;
 
 styleRule: selector body;
 
