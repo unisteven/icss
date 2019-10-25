@@ -86,6 +86,9 @@ public class Checker {
                 this.checkValidCombination(operation.lhs, node);
                 this.checkValidCombination(operation.rhs, node);
             }
+            if(expression instanceof Literal){
+                this.checkValidCombination(expression, node);
+            }
         }
     }
 

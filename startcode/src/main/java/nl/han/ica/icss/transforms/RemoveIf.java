@@ -27,11 +27,12 @@ public class RemoveIf implements Transform {
                 BoolLiteral boolLiteral = (BoolLiteral) ifClause.conditionalExpression;
                 if(boolLiteral.value){
                     // set body
-                    Stylerule stylerule = (Stylerule) parent;
-                    stylerule.replaceNode(ifClause, ifClause.body); // this will replace the entire element with the body.
-                    // TODO loop trough the entire body
-                    for(ASTNode nodes : ifClause.body){
-                        this.evauluateStatements(nodes, parent);
+                    if(parent instanceof Stylerule) {
+                        Stylerule stylerule = (Stylerule) parent;
+                        stylerule.replaceNode(ifClause, ifClause.body); // this will replace the entire element with the body.
+                        for (ASTNode nodes : ifClause.body) {
+                            this.evauluateStatements(nodes, parent);
+                        }
                     }
                 }else{
                     parent.removeChild(node);
